@@ -80,7 +80,7 @@ int main(void) {
     
     sei();  //enable interupts!
     set_sleep_mode(SLEEP_MODE_IDLE);
-    uint8_t mode=0;
+//    uint8_t mode=0;
     while (1){
         
 //        sleep_enable();
