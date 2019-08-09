@@ -1,0 +1,5 @@
+(fp_lib_table
+  (lib (name piwars_hat)(type KiCad)(uri /home/alister/projects/piwars/piwars_hat.pretty)(options "")(descr ""))
+  (lib (name Servo)(type KiCad)(uri ${KIPRJMOD}/Servo.pretty)(options "")(descr ""))
+  (lib (name HitchinHackspace)(type KiCad)(uri ${KIPRJMOD}/Servo.pretty/HitchinHackspace.pretty)(options "")(descr ""))
+)
