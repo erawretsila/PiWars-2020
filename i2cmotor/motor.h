@@ -10,4 +10,6 @@
 #define M2Y PD3
 #define M2PWM PD5
 
-#define SENSE PA0
+#define SENSE GPIOR0
+#define SENSE2 PA0
+#define SENSE1 PA1

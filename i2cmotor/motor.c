@@ -44,13 +44,29 @@ extern uint8_t usi_i2c_slave_address;
 extern uint8_t* USI_Slave_register_buffer[];
 
 ISR(TIMER0_OVF_vect){
-//    PINA=0x01;
+}
+
+void singleShot(uint8_t *motor,uint8_t sense){
+        if (SENSE & _BV(sense)) { // Mode 1 - slide closed wait for open
+//            PINA =_BV(PA1);
+            if (PINA & _BV(sense)) { //slide open
+                SENSE &= ~(_BV(sense)); // Set Mode 0
+                _delay_ms(60);   //ddebounce
+            }
+        } else {        //slide open wait for close & disable motor
+            if (!(PINA && _BV(sense))){  //Slide closed
+                SENSE |=_BV(sense); //Set Mode 1
+                *motor=0;   //Motor Off
+                _delay_ms(60);   //debounce
+            }
+        }
+
 }
 
 int main(void) {
     uint8_t Motor1;
     uint8_t Motor2;
-    PORTA=0xff; //turn on pulups
+    PORTA=0xfd; //turn on pulups
     DDRA=0xfe;  //set port a input (should be unnecessary
     uint8_t I2CAddr =0x60;// 0x03) |0x60;  //read pins PA1 & PA2 for ID 
 // Initialise Motor 1 & Motor 2
@@ -62,7 +78,7 @@ int main(void) {
 //initialise Servo 1 & Servo 2
 	TCCR1A = 0| _BV(COM1A1) | _BV(COM1B1) | _BV(WGM11);
 	TCCR1B = 0 | _BV(WGM13) |_BV(WGM12) | _BV(CS11);
-	ICR1 =20000;
+	ICR1 =20900;
 	OCR1A=1000;
 	OCR1B=1000;
 	
@@ -74,7 +90,7 @@ int main(void) {
     USI_Slave_register_buffer[7]=&OCR1BL;
     USI_Slave_register_buffer[2]=&Motor1;
     USI_Slave_register_buffer[3]=&Motor2;
-	
+
 //initialise I2C
     USI_I2C_Init(I2CAddr);
     
@@ -82,27 +98,14 @@ int main(void) {
     set_sleep_mode(SLEEP_MODE_IDLE);
 //    uint8_t mode=0;
     while (1){
-        
-//        sleep_enable();
-//        sleep_cpu();
+      
         Motor1_Port &= ~(_BV(M1X) | _BV(M1Y));
         if (Motor1 & 1) Motor1_Port |= _BV(M1X);
         if (Motor1 & 2) Motor1_Port |= _BV(M1Y);
         if (!Motor2) Motor2_Port &= ~(_BV(M2X) | _BV(M2Y));
         if (Motor2 & 1) Motor2_Port |= _BV(M2X);
         if (Motor2 & 2) Motor2_Port |= _BV(M2Y);
-        if (PINA & _BV(PA1)) { // wait for slide
-                ;
-            if (PINA & _BV(PA0)) { //slide open
-                PORTA &=~(_BV(PA1)); // A1 low
-                _delay_ms(60);   //ddebounce
-            }
-        } else {
-            if (!(PINA && _BV(PA0))){  //Slide closed
-                PORTA |=_BV(PA1); //toggle A1 High
-                Motor2=0;
-                _delay_ms(60);   //debounce
-            }
-        }
+        singleShot(&Motor2,SENSE2);
+        singleShot(&Motor1,SENSE1);
     }
 }

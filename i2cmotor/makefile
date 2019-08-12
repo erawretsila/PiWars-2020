@@ -1,6 +1,7 @@
 #makefile for ATTiny4313
 
-DEVICE  = attiny2313
+DEVICE  = attiny2313a
+DEV=attiny2313
 CLOCK=8000000
 PROGRAMMER = -c usbasp
 FILENAME = motor
@@ -11,7 +12,7 @@ OBJECTS = $(FILENAME)
 
 FUSES = -U lfuaae:w:0xe4:m -U hfuse:w:0x9f:m -Uefuse:w:0xff:m
 
-AVRDUDE = avrdude $(PROGRAMMER) -p $(DEVICE) 
+AVRDUDE = avrdude $(PROGRAMMER) -p $(DEV)  -B8
 COMPILE = avr-gcc -Wall -Os -DF_CPU=$(CLOCK) -mmcu=$(DEVICE)
 
 #Symbolivc targets
