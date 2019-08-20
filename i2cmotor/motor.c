@@ -114,12 +114,10 @@ int main(void) {
 //    uint8_t mode=0;
     while (1){
         wdt_reset();
-        Motor1_Port &= ~(_BV(M1X) | _BV(M1Y));
-        if (Motor1 & 1) Motor1_Port |= _BV(M1X);
-        if (Motor1 & 2) Motor1_Port |= _BV(M1Y);
-        if (!Motor2) Motor2_Port &= ~(_BV(M2X) | _BV(M2Y));
-        if (Motor2 & 1) Motor2_Port |= _BV(M2X);
-        if (Motor2 & 2) Motor2_Port |= _BV(M2Y);
+        if (Motor1 & 1) Motor1_Port |= _BV(M1X); else Motor1_Port &=~(_BV(M1X));
+        if (Motor1 & 2) Motor2_Port |= _BV(M1Y); else Motor1_Port &=~(_BV(M1Y));
+        if (Motor2 & 1) Motor2_Port |= _BV(M2X); else Motor2_Port &=~(_BV(M2X));
+        if (Motor2 & 2) Motor2_Port |= _BV(M2Y); else Motor2_Port &=~(_BV(M2Y));
         singleShot(&Motor2,SENSE2);
         singleShot(&Motor1,SENSE1);
     }

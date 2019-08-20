@@ -5,19 +5,19 @@ DEV=attiny2313
 CLOCK=8000000
 PROGRAMMER = -c usbasp
 FILENAME = motor
-OBJECTS = $(FILENAME)
+OBJECTS = $(FILENAME) usi_i2c_slave
 
 #for ATTiny 85
 #see http://engbedded.com/fusecalc/
 
-FUSES = -U lfuaae:w:0xe4:m -U hfuse:w:0x9f:m -Uefuse:w:0xff:m
+FUSES = -U lfuse:w:0xe4:m -U hfuse:w:0x9f:m -Uefuse:w:0xff:m
 
-AVRDUDE = avrdude $(PROGRAMMER) -p $(DEV)  -B8
+AVRDUDE = avrdude $(PROGRAMMER) -p $(DEV)
 COMPILE = avr-gcc -Wall -Os -DF_CPU=$(CLOCK) -mmcu=$(DEVICE)
 
 #Symbolivc targets
 
-all:	$(FILENAME).hex
+all:	$(FILENAME).hex $(FILENAME).eep
 
 .c.o:
 	$(COMPILE) -c $< -o $@
@@ -30,11 +30,16 @@ all:	$(FILENAME).hex
 
 flash: all
 	$(AVRDUDE) -U flash:w:$(FILENAME).hex:i
-
+	
 fuse:
-	$(AVRDUDE) $(FUSES)
+	$(AVRDUDE) -B 1000 $(FUSES)
 
-install: flash fuse
+phoney:
+eeprom:
+	$(AVRDUDE) -U eeprom:w:$(FILENAME).eep:i
+	
+install: fuse flash eeprom
+
 
 clean:
 	rm -f *.hex *.elf *.o
@@ -48,3 +53,7 @@ $(FILENAME).hex: $(FILENAME).elf
 	avr-objcopy -j .text -j .data -O ihex $(FILENAME).elf $(FILENAME).hex
 	avr-size --format=avr --mcu=$(DEVICE) $(FILENAME).elf
 
+$(FILENAME).eep: $(FILENAME).elf
+	rm -f $(FILENAME).eep
+	avr-objcopy -j .eeprom -O ihex $(FILENAME).elf $(FILENAME).eep
+	
