@@ -1,6 +1,6 @@
 EESchema Schematic File Version 4
 LIBS:Servo-cache
-EELAYER 29 0
+EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
@@ -863,4 +863,8 @@ F 3 "" H 10100 3500 50  0001 C CNN
 	1    10100 3500
 	1    0    0    -1  
 $EndComp
+Text Notes 7600 7500 0    50   ~ 0
+Z-Gun Interface
+Text Notes 8350 7650 0    50   ~ 0
+10/08/2019
 $EndSCHEMATC
