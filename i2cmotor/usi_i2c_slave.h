@@ -34,7 +34,8 @@
 #endif
 
 #if defined(__AVR_AT90Tiny2313__) | \
-	defined(__AVR_ATtiny2313__) | \
+    defined(__AVR_ATtiny2313__) | \
+    defined(__AVR_ATtiny2313A__)| \
     defined(__AVR_ATtiny4313__)
     #define DDR_USI             DDRB
     #define PORT_USI            PORTB

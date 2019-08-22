@@ -39,10 +39,10 @@
 #include "usi_i2c_slave.h"
 #include "motor.h"
 
-EEMEM   uint8_t i2caddr =0xff;
 
 EEMEM   char version[] = "I2c Motor & Servo Controler V2.0";
 EEMEM   char copyright[]="(c)A Ware 2019";
+EEMEM   uint8_t i2caddr =0xff;
 
 
 uint8_t serial_i2c_buffer[8];

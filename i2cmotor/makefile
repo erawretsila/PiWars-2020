@@ -55,5 +55,6 @@ $(FILENAME).hex: $(FILENAME).elf
 
 $(FILENAME).eep: $(FILENAME).elf
 	rm -f $(FILENAME).eep
-	avr-objcopy -j .eeprom -O ihex $(FILENAME).elf $(FILENAME).eep
+	-avr-objcopy -j .eeprom --change-section-lma .eeprom=0 --no-change-warnings -O ihex $< $@
+#	avr-objcopy -j .eeprom -O ihex $(FILENAME).elf $(FILENAME).eep
 	
