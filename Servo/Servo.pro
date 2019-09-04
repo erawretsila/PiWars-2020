@@ -1,4 +1,4 @@
-update=Wed 21 Aug 2019 12:54:34 BST
+update=Wed 04 Sep 2019 13:09:34 BST
 version=1
 last_client=kicad
 [general]
@@ -261,7 +261,7 @@ dPairViaGap=0.25
 [schematic_editor]
 version=1
 PageLayoutDescrFile=
-PlotDirectoryName=
+PlotDirectoryName=/home/alister/Documents/PiWars/
 SubpartIdSeparator=0
 SubpartFirstId=65
 NetFmtName=

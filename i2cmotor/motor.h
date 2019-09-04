@@ -13,3 +13,6 @@
 #define SENSE GPIOR0
 #define SENSE2 PA0
 #define SENSE1 PA1
+
+#define SERVO1 PB3
+#define SERVO2 PB4
