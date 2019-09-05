@@ -27,21 +27,25 @@
  * 05   Servo 1 low
  * 06   Servo 2 high
  * 07   Servo 2 low
- *
+ * Port D - Care req bits D3,D4 & D5 in use for Motor 2
+ * 08   DDRD    Data Direction register
+ * 09   PORTD   Output Port
+ * 0a   PIND    Input port
+ * 0f   OSCAL - Oscillator calibration
  */
 
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>
 #include <avr/eeprom.h>
-//#include <avr/sleep.h>
 #include <avr/wdt.h>
 #include "usi_i2c_slave.h"
 #include "motor.h"
 
 
-EEMEM   char version[] = "I2C Motor & Servo Controller V2.1";
+EEMEM   char version[] = "I2C Motor & Servo Controller V2.2";
 EEMEM   char copyright[]="(c)A Ware 2019";
+EEMEM   uint8_t oscal =0xff;
 EEMEM   uint8_t i2caddr =0xff;
 
 
@@ -75,6 +79,7 @@ int main(void) {
     uint8_t Motor1;
     uint8_t Motor2;
     uint8_t i2c_addr;
+    uint8_t fcal;
     wdt_reset();
     wdt_enable(WDTO_8S);
     PORTA=0xff; //turn on pulups
@@ -92,16 +97,28 @@ int main(void) {
 	ICR1 =20000;    //20000 uS = 20mS = 50hz
 	OCR1A=1000;
 	OCR1B=1000;
-	
+
     USI_Slave_register_buffer[0]=&OCR0A;
     USI_Slave_register_buffer[1]=&OCR0B;
+    USI_Slave_register_buffer[2]=&Motor1;
+    USI_Slave_register_buffer[3]=&Motor2;
     USI_Slave_register_buffer[4]=&OCR1AH;
     USI_Slave_register_buffer[5]=&OCR1AL;
     USI_Slave_register_buffer[6]=&OCR1BH;
     USI_Slave_register_buffer[7]=&OCR1BL;
-    USI_Slave_register_buffer[2]=&Motor1;
-    USI_Slave_register_buffer[3]=&Motor2;
-
+    USI_Slave_register_buffer[8]=&DDRD;
+    USI_Slave_register_buffer[9]=&PORTD;
+    USI_Slave_register_buffer[0x0a]=&PIND;
+    USI_Slave_register_buffer[0x0f]=&OSCCAL;
+    
+//initialise OSCCAL
+    fcal=eeprom_read_byte(&oscal);
+    if (fcal==0xff){    //blank value
+        fcal=OSCCAL;
+        eeprom_update_byte(&oscal,fcal);
+    } else {
+        OSCCAL=fcal;
+    }   
 //initialise I2C
     i2c_addr=eeprom_read_byte(&i2caddr);    //read I2C addr from EEPROM
     if (i2c_addr==0xff){    //I2C Addr not set
@@ -111,8 +128,6 @@ int main(void) {
     USI_I2C_Init(i2c_addr);
     
     sei();  //enable interupts!
-//    set_sleep_mode(SLEEP_MODE_IDLE);
-//    uint8_t mode=0;
     while (1){
         wdt_reset();
         if (Motor1 & 1) Motor1_Port |= _BV(M1X); else Motor1_Port &=~(_BV(M1X));
@@ -121,5 +136,9 @@ int main(void) {
         if (Motor2 & 2) Motor2_Port |= _BV(M2Y); else Motor2_Port &=~(_BV(M2Y));
         singleShot(&Motor2,SENSE2);
         singleShot(&Motor1,SENSE1);
+        if (OSCCAL != fcal){
+            fcal=OSCCAL;
+            eeprom_update_byte(&oscal,fcal);
+            }
     }
 }

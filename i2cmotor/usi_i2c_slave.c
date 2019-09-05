@@ -26,7 +26,6 @@ uint8_t usi_i2c_mode;
 ////USI Slave States///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-#define USI_SLAVE_REGISTER_COUNT 8
 
 // The I2C register file is stored as an array of pointers, point these to whatever your I2C registers
 // need to read/write in your code.  This abstracts the buffer and makes it easier to write directly
