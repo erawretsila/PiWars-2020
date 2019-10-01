@@ -1,7 +1,7 @@
 #makefile for ATTiny4313
 
 DEVICE  = attiny2313a
-DEV=attiny2313
+DEV=attiny4313
 CLOCK=8000000
 PROGRAMMER = -c usbasp
 FILENAME = motor

@@ -101,21 +101,27 @@ void USI_I2C_Init(uint8_t address)
 /////////////////////////////////////////////////////////////////////////////////
 
 ISR(USI_START_vect)
-{    USI_I2C_Slave_State = USI_SLAVE_CHECK_ADDRESS;
-
+{//    PORTA=0xfc;
+//    USI_I2C_Slave_State = USI_SLAVE_CHECK_ADDRESS;
+//    PINA=_BV(1);
 	USI_SET_SDA_INPUT();
 
 	// wait for SCL to go low to ensure the Start Condition has completed (the
 	// start detector will hold SCL low ) - if a Stop Condition arises then leave
 	// the interrupt to prevent waiting forever - don't use USISR to test for Stop
 	// Condition as in Application Note AVR312 because the Stop Condition Flag is
-	// going to be set from the last TWI sequence	while((PIN_USI & (1 << PIN_USI_SCL)) && !((PIN_USI & (1 << PIN_USI_SDA))));//    _delay_us(4);
+	// going to be set from the last TWI sequence	while((PIN_USI & (1 << PIN_USI_SCL)) && !((PIN_USI & (1 << PIN_USI_SDA)))){
+        ;
+    }//    _delay_us(2);
 
 	if(!(PIN_USI & (1 << PIN_USI_SDA)))
 	{
 		// a Stop Condition did not occur
 		USICR = USI_SLAVE_STOP_NOT_OCCUR_USICR;
+        USI_I2C_Slave_State = USI_SLAVE_CHECK_ADDRESS;
+        USISR = USI_SLAVE_CLEAR_START_USISR;
 
+//        PORTA=0xfc;
 	}
 	else
 	{
@@ -123,7 +129,7 @@ ISR(USI_START_vect)
     	USICR = USI_SLAVE_STOP_DID_OCCUR_USICR;
 	}
 
-	USISR = USI_SLAVE_CLEAR_START_USISR;}
+}
 
 /////////////////////////////////////////////////////////////////////////////////
 // ISR USI_OVERFLOW_vect - USI Overflow Interrupt                              //
@@ -138,7 +144,8 @@ ISR(USI_START_vect)
 
 ISR(USI_OVERFLOW_vect)
 {
-    _delay_us(2);
+//    PORTA=0xfe;
+//    _delay_us(2);
 	switch (USI_I2C_Slave_State)
 	{
 		/////////////////////////////////////////////////////////////////////////
@@ -278,6 +285,8 @@ ISR(USI_OVERFLOW_vect)
 			USIDR = 0;
 			USI_SET_SDA_OUTPUT();
 			USISR = USI_SLAVE_COUNT_ACK_USISR;
-			break;
+			break;
+
 	}
+    PORTA=0xff;
 }

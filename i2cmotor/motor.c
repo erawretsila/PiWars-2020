@@ -81,7 +81,7 @@ int main(void) {
     uint8_t i2c_addr;
     uint8_t fcal;
     wdt_reset();
-    wdt_enable(WDTO_8S);
+    wdt_enable(WDTO_1S);
     PORTA=0xff; //turn on pulups
     DDRA=0x00;  //set port a input (should be unnecessary
 // Initialise Motor 1 & Motor 2
@@ -129,7 +129,9 @@ int main(void) {
     
     sei();  //enable interupts!
     while (1){
-        wdt_reset();
+//        if (PIN_USI & (1 << PIN_USI_SCL)){
+            wdt_reset();
+//        }
         if (Motor1 & 1) Motor1_Port |= _BV(M1X); else Motor1_Port &=~(_BV(M1X));
         if (Motor1 & 2) Motor2_Port |= _BV(M1Y); else Motor1_Port &=~(_BV(M1Y));
         if (Motor2 & 1) Motor2_Port |= _BV(M2X); else Motor2_Port &=~(_BV(M2X));
