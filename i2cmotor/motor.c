@@ -83,7 +83,8 @@ int main(void) {
     wdt_reset();
     wdt_enable(WDTO_1S);
     PORTA=0xff; //turn on pulups
-    DDRA=0x00;  //set port a input (should be unnecessary
+    DDRA=0x03;  //set port a input (should be unnecessary
+    
 // Initialise Motor 1 & Motor 2
     Motor1_DDR |= _BV(M1PWM)|_BV(M1X)|_BV(M1Y);
     Motor2_DDR |= _BV(M2PWM)|_BV(M2X)|_BV(M2Y);
@@ -129,6 +130,7 @@ int main(void) {
     
     sei();  //enable interupts!
     while (1){
+//        PINA=0x01;
         if (PIN_USI & (1 << PIN_USI_SCL)){
             wdt_reset();
         }

@@ -139,10 +139,7 @@ ISR(USI_START_vect)
 //  the I2C protocol for proper transmission.                                  //
 /////////////////////////////////////////////////////////////////////////////////
 
-ISR(USI_OVERFLOW_vect)
-{
-//    PORTA=0xfe;
-//    _delay_us(2);
+ISR(USI_OVERFLOW_vect){
 	switch (USI_I2C_Slave_State)
 	{
 		/////////////////////////////////////////////////////////////////////////
@@ -155,7 +152,8 @@ ISR(USI_OVERFLOW_vect)
 		//  If the address was not for this device, the USI system is          //
 		//  re-initialized for start condition.                                //
 		/////////////////////////////////////////////////////////////////////////
-		case USI_SLAVE_CHECK_ADDRESS:			if((USIDR == 0) || ((USIDR >> 1) == usi_i2c_slave_address))			{
+		case USI_SLAVE_CHECK_ADDRESS:
+//            PINA=0x01;			if((USIDR == 0) || ((USIDR >> 1) == usi_i2c_slave_address))			{
 				if (USIDR & 0x01)
 				{
 					USI_I2C_Slave_State = USI_SLAVE_SEND_DATA;
@@ -166,18 +164,19 @@ ISR(USI_OVERFLOW_vect)
 					USI_I2C_Slave_State = USI_SLAVE_RECV_DATA_WAIT;
 				}
 
-				//Set USI to send ACK
-				USIDR = 0;
-				USI_SET_SDA_OUTPUT();
+				//Set USI to send ACK
+
+				USI_SET_SDA_OUTPUT();                PORT_USI &= ~(1 << PORT_USI_SDA); //set SDA low for ack 
+				USIDR = 0;
 				USISR = USI_SLAVE_COUNT_ACK_USISR;
+//                PINA=0x01;
 			}
 			else
 			{
-				//Set USI to Start Condition Mode
-				USICR = USI_SLAVE_SET_START_COND_USICR;
+				//Set USI to Start Condition Mode				USICR = USI_SLAVE_SET_START_COND_USICR;
 				USISR = USI_SLAVE_SET_START_COND_USISR;
                 
-			}
+			} //           PINA=0x01;
 			break;
 
 		/////////////////////////////////////////////////////////////////////////
@@ -192,7 +191,6 @@ ISR(USI_OVERFLOW_vect)
 			//the line high (I2C should *NEVER* drive high, and could damage
 			//connected devices if operating at different voltage levels)
 			PORT_USI &= ~(1 << PORT_USI_SDA);
-
 			USI_I2C_Slave_State = USI_SLAVE_SEND_DATA_ACK_CHECK;
 			USI_SET_SDA_INPUT();
 			USISR = USI_SLAVE_COUNT_ACK_USISR;
@@ -242,7 +240,7 @@ ISR(USI_OVERFLOW_vect)
 			//To send data, DDR for SDA must be 1 (Output) and PORT for SDA
 			//must also be 1 (line drives low on USIDR MSB = 0 or PORT = 0)
 			USI_SET_SDA_OUTPUT();
-			PORT_USI |= (1 << PORT_USI_SDA);
+//			PORT_USI &= ~(1 << PORT_USI_SDA);
 			USISR = USI_SLAVE_COUNT_BYTE_USISR;
 			break;
 
@@ -285,5 +283,5 @@ ISR(USI_OVERFLOW_vect)
 			break;
 
 	}
-    PORTA=0xff;
+//    PORTA=0xff;
 }
