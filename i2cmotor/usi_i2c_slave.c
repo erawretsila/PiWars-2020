@@ -52,8 +52,8 @@ enum
 #define USI_SLAVE_COUNT_BYTE_USISR			0b01110000 | (0x00 << USICNT0)	//Counts 8 clocks (BYTE)
 #define USI_SLAVE_CLEAR_START_USISR			0b11110000 | (0x00 << USICNT0)  //Clears START flag
 #define USI_SLAVE_SET_START_COND_USISR		0b01110000 | (0x00 << USICNT0)
-#define USI_SLAVE_SET_START_COND_USICR		0b10111000
-#define USI_SLAVE_STOP_DID_OCCUR_USICR		0b10111000
+#define USI_SLAVE_SET_START_COND_USICR		0b10101000
+#define USI_SLAVE_STOP_DID_OCCUR_USICR		0b10101000
 #define USI_SLAVE_STOP_NOT_OCCUR_USICR		0b11111000
 
 /////////////////////////////////////////////////
@@ -101,9 +101,9 @@ void USI_I2C_Init(uint8_t address)
 /////////////////////////////////////////////////////////////////////////////////
 
 ISR(USI_START_vect)
-{//    PORTA=0xfc;
-//    USI_I2C_Slave_State = USI_SLAVE_CHECK_ADDRESS;
-//    PINA=_BV(1);
+{
+    USI_I2C_Slave_State = USI_SLAVE_CHECK_ADDRESS;
+
 	USI_SET_SDA_INPUT();
 
 	// wait for SCL to go low to ensure the Start Condition has completed (the
@@ -112,22 +112,19 @@ ISR(USI_START_vect)
 	// Condition as in Application Note AVR312 because the Stop Condition Flag is
 	// going to be set from the last TWI sequence	while((PIN_USI & (1 << PIN_USI_SCL)) && !((PIN_USI & (1 << PIN_USI_SDA)))){
         ;
-    }//    _delay_us(2);
-
+    }
 	if(!(PIN_USI & (1 << PIN_USI_SDA)))
 	{
 		// a Stop Condition did not occur
 		USICR = USI_SLAVE_STOP_NOT_OCCUR_USICR;
-        USI_I2C_Slave_State = USI_SLAVE_CHECK_ADDRESS;
-        USISR = USI_SLAVE_CLEAR_START_USISR;
 
-//        PORTA=0xfc;
 	}
 	else
 	{
 		// a Stop Condition did occur
     	USICR = USI_SLAVE_STOP_DID_OCCUR_USICR;
 	}
+	USISR = USI_SLAVE_CLEAR_START_USISR;
 
 }
 
