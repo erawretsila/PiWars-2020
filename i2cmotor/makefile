@@ -14,7 +14,7 @@ OBJECTS = $(FILENAME) usi_i2c_slave
 FUSES = -U lfuse:w:0xe4:m -U hfuse:w:0x9f:m -Uefuse:w:0xff:m
 
 AVRDUDE = avrdude $(PROGRAMMER) -p $(DEV)
-COMPILE = avr-gcc -Wall -Os -DF_CPU=$(CLOCK) -mmcu=$(DEVICE)
+COMPILE = avr-gcc -Wall -Os -DF_CPU=$(CLOCK) -mmcu=$(DEVICE) --short-enums
 
 #Symbolivc targets
 
