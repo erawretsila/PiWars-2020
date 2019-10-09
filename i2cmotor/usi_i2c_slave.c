@@ -101,8 +101,7 @@ void USI_I2C_Init(uint8_t address)
 /////////////////////////////////////////////////////////////////////////////////
 
 ISR(USI_START_vect)
-{
-    USI_I2C_Slave_State = USI_SLAVE_CHECK_ADDRESS;
+{//    PINA=0x01;
 
 	USI_SET_SDA_INPUT();
 
@@ -110,7 +109,8 @@ ISR(USI_START_vect)
 	// start detector will hold SCL low ) - if a Stop Condition arises then leave
 	// the interrupt to prevent waiting forever - don't use USISR to test for Stop
 	// Condition as in Application Note AVR312 because the Stop Condition Flag is
-	// going to be set from the last TWI sequence	while((PIN_USI & (1 << PIN_USI_SCL)) && !((PIN_USI & (1 << PIN_USI_SDA)))){
+	// going to be set from the last TWI sequence/* Not sure why any of this code is here!
+	while((PIN_USI & (1 << PIN_USI_SCL)) && !((PIN_USI & (1 << PIN_USI_SDA)))){
         ;
     }
 	if(!(PIN_USI & (1 << PIN_USI_SDA)))
@@ -123,9 +123,12 @@ ISR(USI_START_vect)
 	{
 		// a Stop Condition did occur
     	USICR = USI_SLAVE_STOP_DID_OCCUR_USICR;
-	}
+	}*/
+    USICR = USI_SLAVE_STOP_NOT_OCCUR_USICR;
+
 	USISR = USI_SLAVE_CLEAR_START_USISR;
-
+    USI_I2C_Slave_State = USI_SLAVE_CHECK_ADDRESS;
+//    PINA=0x01;
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -153,7 +156,7 @@ ISR(USI_OVERFLOW_vect){
 		//  re-initialized for start condition.                                //
 		/////////////////////////////////////////////////////////////////////////
 		case USI_SLAVE_CHECK_ADDRESS:
-//            PINA=0x01;			if((USIDR == 0) || ((USIDR >> 1) == usi_i2c_slave_address))			{
+			if((USIDR == 0) || ((USIDR >> 1) == usi_i2c_slave_address))			{
 				if (USIDR & 0x01)
 				{
 					USI_I2C_Slave_State = USI_SLAVE_SEND_DATA;
@@ -176,8 +179,7 @@ ISR(USI_OVERFLOW_vect){
 				//Set USI to Start Condition Mode				USICR = USI_SLAVE_SET_START_COND_USICR;
 				USISR = USI_SLAVE_SET_START_COND_USISR;
                 
-			} //           PINA=0x01;
-			break;
+			}			break;
 
 		/////////////////////////////////////////////////////////////////////////
 		// Case USI_SLAVE_SEND_DATA_ACK_WAIT                                   //

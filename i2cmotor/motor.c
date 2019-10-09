@@ -43,7 +43,7 @@
 #include "motor.h"
 
 
-EEMEM   char version[] = "I2C Motor & Servo Controller V2.2";
+EEMEM   char version[] = "I2C Motor & Servo Controller V2.4";
 EEMEM   char copyright[]="(c)A Ware 2019";
 EEMEM   uint8_t oscal =0xff;
 EEMEM   uint8_t i2caddr =0xff;

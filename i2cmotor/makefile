@@ -32,7 +32,7 @@ all:	$(FILENAME).hex $(FILENAME).eep
 flash: all
 	$(AVRDUDE) -U flash:w:$(FILENAME).hex:i
 	
-fuse:
+fuse: all
 	$(AVRDUDE) -B 1000 $(FUSES)
 
 phoney:
