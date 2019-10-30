@@ -58,7 +58,7 @@
     #define PIN_USI_SCL         PINB2
     #define USI_OVERFLOW_vect   USI_OVF_vect
 #endif
-#define USI_SLAVE_REGISTER_COUNT 16
+#define USI_SLAVE_REGISTER_COUNT 0x0f
 
 //USI I2C Initialize
 //  address - If slave, this parameter is the slave address

@@ -6,7 +6,7 @@ DEV=attiny2313
 CLOCK=8000000
 PROGRAMMER = -c usbasp
 FILENAME = motor
-OBJECTS = $(FILENAME) usi_i2c_slave
+OBJECTS = $(FILENAME)
 
 #for ATTiny 85
 #see http://engbedded.com/fusecalc/
@@ -45,8 +45,8 @@ install: fuse flash eeprom
 clean:
 	rm -f *.hex *.elf *.o
 
-$(FILENAME).elf: $(FILENAME).o usi_i2c_slave.o 
-	$(COMPILE) -o $(FILENAME).elf motor.o usi_i2c_slave.o
+$(FILENAME).elf: $(FILENAME).o usi_i2c_slave.o quad.o
+	$(COMPILE) -o $(FILENAME).elf motor.o usi_i2c_slave.o quad.o
 	avr-objdump -d -S $@ >$(FILENAME).lss
 
 $(FILENAME).hex: $(FILENAME).elf
